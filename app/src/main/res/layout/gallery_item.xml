@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cv_adapter_gallery_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="2dp"
+    card_view:cardElevation="2dp"
+    android:layout_margin="1dp"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <ProgressBar
+                android:id="@+id/pb_adapter_gallery_item"
+                style="?android:attr/progressBarStyleSmallInverse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"/>
+            <ImageView
+                android:id="@+id/iv_adapter_gallery_item"
+                android:transitionName="profile"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/background_text"
+                    android:layout_alignParentBottom="true">
+                <com.dision.android.flickrgallery.ui.CustomTextView
+                    android:id="@+id/tv_title_adapter_gallery_item"
+                    android:transitionName="title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/background_floating_material_light"
+                    android:text="Test"
+                    android:textSize="16dp"
+                    android:paddingTop="24dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"/>
+                <com.dision.android.flickrgallery.ui.CustomTextView
+                    android:id="@+id/tv_subtitle_adapter_gallery_item"
+                    android:transitionName="subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/background_floating_material_light"
+                    android:text="SubTest"
+                    android:textSize="12dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="16dp"/>
+                </LinearLayout>
+        </RelativeLayout>
+</android.support.v7.widget.CardView>
+

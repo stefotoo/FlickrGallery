@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_profile"
+            android:checked="true"
+            android:icon="@drawable/ic_person_grey600_24dp"
+            android:title="@string/drawer_profile"/>
+        <item
+            android:id="@+id/menu_settings"
+            android:icon="@drawable/ic_settings_grey600_24dp"
+            android:title="@string/drawer_settings" />
+        <item
+            android:id="@+id/menu_log_out"
+            android:icon="@drawable/ic_exit_to_app_grey600_24dp"
+            android:title="@string/drawer_log_out" />
+    </group>
+</menu>
