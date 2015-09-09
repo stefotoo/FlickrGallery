@@ -20,21 +20,22 @@ import android.view.animation.DecelerateInterpolator;
 import com.balysv.materialmenu.MaterialMenuDrawable;
 import com.dision.android.flickrgallery.R;
 import com.dision.android.flickrgallery.adapters.GalleryItemAdapter;
+import com.dision.android.flickrgallery.application.App;
 import com.dision.android.flickrgallery.interfaces.GotPicasso;
 import com.dision.android.flickrgallery.interfaces.GotToolbar;
 import com.dision.android.flickrgallery.listeners.HidingScrollListener;
-import com.dision.android.flickrgallery.models.Photo;
-import com.dision.android.flickrgallery.tasks.abstracts.SimpleTask;
-import com.dision.android.flickrgallery.utils.FlickrFetchr;
+import com.dision.android.flickrgallery.rest.model.ApiResponse;
+import com.dision.android.flickrgallery.utils.LogUtil;
 import com.dision.android.flickrgallery.utils.Util;
 import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class MainActivity
         extends AppCompatActivity
@@ -186,25 +187,28 @@ public class MainActivity
     }
 
     private void fetchPhotos() {
-        new SimpleTask<Void, List<Photo>>(new SimpleTask.SimpleCallback<List<Photo>>() {
-            @Override
-            public void onStart() {
-                pw.setVisibility(View.VISIBLE);
-            }
+        final String TAG = Util.stringsToPath(BASIC_TAG, "fetchPhotos");
+
+        pw.setVisibility(View.VISIBLE);
+        App.getRestClient().getAppService().getRecentPhotos(new Callback<ApiResponse>() {
+
 
             @Override
-            public void onComplete(List<Photo> res) {
+            public void success(ApiResponse apiResponse, Response response) {
                 pw.setVisibility(View.GONE);
 
                 mAdapter.clearData(true);
-                mAdapter.addData(res, true);
+                mAdapter.addData(apiResponse.getPhotoGallery().getPhotos(), true);
             }
-        }) {
+
             @Override
-            protected List<Photo> doInBackground(Void... params) {
-                return new FlickrFetchr().fetchItems();
+            public void failure(RetrofitError error) {
+                LogUtil.log(TAG, error.getCause().getMessage());
+                error.printStackTrace();
+
+                pw.setVisibility(View.GONE);
             }
-        }.execute();
+        });
     }
 
     @Override

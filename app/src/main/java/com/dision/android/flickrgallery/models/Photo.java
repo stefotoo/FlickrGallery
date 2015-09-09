@@ -1,12 +1,19 @@
 package com.dision.android.flickrgallery.models;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Photo {
 
     // variables
+    @SerializedName("id")
     private String id;
+    @SerializedName("secret")
     private String caption;
+    @SerializedName("url_m")
     private String url;
+    @SerializedName("owner")
     private String owner;
+    @SerializedName("title")
     private String description;
 
     // constructor
