@@ -3,11 +3,14 @@ package com.dision.android.flickrgallery.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,6 +18,9 @@ import android.widget.ProgressBar;
 
 import com.dision.android.flickrgallery.R;
 import com.dision.android.flickrgallery.activities.PhotoDetailsActivity;
+import com.dision.android.flickrgallery.helpers.ItemTouchHelperAdapter;
+import com.dision.android.flickrgallery.helpers.ItemTouchHelperViewHolder;
+import com.dision.android.flickrgallery.interfaces.OnStartDragListener;
 import com.dision.android.flickrgallery.models.Photo;
 import com.dision.android.flickrgallery.ui.CustomTextView;
 import com.dision.android.flickrgallery.utils.CompatibilityUtil;
@@ -23,13 +29,15 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class GalleryItemAdapter
-        extends RecyclerView.Adapter<GalleryItemAdapter.GalleryItemHolder> {
+        extends RecyclerView.Adapter<GalleryItemAdapter.GalleryItemHolder>
+        implements ItemTouchHelperAdapter {
 
     // constants
     public static final String BASIC_TAG = GalleryItemAdapter.class.getName();
@@ -40,13 +48,16 @@ public class GalleryItemAdapter
     private Context mContext;
     private List<Photo> mData;
     private Picasso mPicasso;
+    private OnStartDragListener mDragStartListener;
 
     // constructor
     public GalleryItemAdapter(Context context,
-                              Picasso picasso) {
+                              Picasso picasso,
+                              OnStartDragListener dragStartListener) {
 
         mContext = context;
         mPicasso = picasso;
+        mDragStartListener = dragStartListener;
 
         mData = new ArrayList<>();
     }
@@ -97,7 +108,7 @@ public class GalleryItemAdapter
     }
 
     @Override
-    public void onBindViewHolder(GalleryItemHolder viewHolder, int position) {
+    public void onBindViewHolder(final GalleryItemHolder viewHolder, int position) {
         Photo item = mData.get(position);
 
         mPicasso
@@ -106,6 +117,28 @@ public class GalleryItemAdapter
                 .into(viewHolder.iv, new ImageLoadedCallback(viewHolder.pb));
 
         viewHolder.bindGalleryItem(mContext, item);
+
+        viewHolder.iv.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_UP) {
+                    mDragStartListener.onStartDrag(viewHolder);
+                }
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        Collections.swap(mData, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+        return true;
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        // TODO
     }
 
     private class ImageLoadedCallback implements Callback {
@@ -131,7 +164,7 @@ public class GalleryItemAdapter
     // inner classes
     public final static class GalleryItemHolder
             extends RecyclerView.ViewHolder
-            implements View.OnClickListener {
+            implements View.OnClickListener, ItemTouchHelperViewHolder {
 
         // variables
         private Photo mItem;
@@ -194,6 +227,16 @@ public class GalleryItemAdapter
             } else {
                 ((Activity) mContext).startActivityForResult(i, REQUEST_PHOTO_DETAILS);
             }
+        }
+
+        @Override
+        public void onItemSelected() {
+            itemView.setBackgroundColor(Color.LTGRAY);
+        }
+
+        @Override
+        public void onItemClear() {
+            itemView.setBackgroundColor(0);
         }
     }
 }

@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -21,8 +22,10 @@ import com.balysv.materialmenu.MaterialMenuDrawable;
 import com.dision.android.flickrgallery.R;
 import com.dision.android.flickrgallery.adapters.GalleryItemAdapter;
 import com.dision.android.flickrgallery.application.App;
+import com.dision.android.flickrgallery.helpers.SimpleItemTouchHelperCallback;
 import com.dision.android.flickrgallery.interfaces.GotPicasso;
 import com.dision.android.flickrgallery.interfaces.GotToolbar;
+import com.dision.android.flickrgallery.interfaces.OnStartDragListener;
 import com.dision.android.flickrgallery.listeners.HidingScrollListener;
 import com.dision.android.flickrgallery.rest.model.ApiResponse;
 import com.dision.android.flickrgallery.utils.LogUtil;
@@ -39,7 +42,7 @@ import retrofit.client.Response;
 
 public class MainActivity
         extends AppCompatActivity
-        implements GotPicasso, GotToolbar {
+        implements GotPicasso, GotToolbar, OnStartDragListener {
 
     // constants
     public static final String BASIC_TAG = MainActivity.class.getName();
@@ -50,6 +53,7 @@ public class MainActivity
     private GalleryItemAdapter mAdapter;
     private int mToolbarHeight;
     private MaterialMenuDrawable materialMenu;
+    private ItemTouchHelper mItemTouchHelper;
 
     // UI variables
     @Bind(R.id.toolbar_activity_main) Toolbar toolbar;
@@ -97,7 +101,7 @@ public class MainActivity
 
     private void initVariables() {
         mPicasso = Picasso.with(this);
-        mAdapter = new GalleryItemAdapter(this, mPicasso);
+        mAdapter = new GalleryItemAdapter(this, mPicasso, this);
         mToolbarHeight = Util.getToolbarHeight(this);
         materialMenu = new MaterialMenuDrawable(this, Color.WHITE, MaterialMenuDrawable.Stroke.THIN);
     }
@@ -184,6 +188,10 @@ public class MainActivity
         });
 
         rvGalleryItems.setAdapter(mAdapter);
+
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mAdapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(rvGalleryItems);
     }
 
     private void fetchPhotos() {
@@ -219,5 +227,10 @@ public class MainActivity
     @Override
     public Toolbar getToolbar() {
         return toolbar;
+    }
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
     }
 }
